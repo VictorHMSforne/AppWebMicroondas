@@ -1,0 +1,150 @@
+﻿@model WebMicroondas.Models.Microondas
+
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<table style="width: 100%; height: 50vh; border: none;">
+    <tr>
+        <td align="center" valign="middle">
+            <form action="/Microondas/IniciarAquecimento" method="post">
+                <div class="form-group">
+                    <label for="Tempo" class="control-label">Tempo:</label>
+                    <input type="number" id="Tempo" name="Tempo" value="@(ViewBag.Resultado)" onclick="setCurrentInput('Tempo')">
+                </div>
+                <div class="form-group">
+                    <label for="Potencia" class="control-label">Potência:</label>
+                    <input type="number" id="Potencia" name="Potencia" onclick="setCurrentInput('Potencia')">
+                </div>
+                <div style="margin-top: 20px;">
+                    <table border="0" style="border-collapse: collapse; text-align: center;">
+                        <tr>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(1)">1</button></td>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(2)">2</button></td>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(3)">3</button></td>
+                        </tr>
+                        <tr>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(4)">4</button></td>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(5)">5</button></td>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(6)">6</button></td>
+                        </tr>
+                        <tr>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(7)">7</button></td>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(8)">8</button></td>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(9)">9</button></td>
+                        </tr>
+                        <tr>
+                            <td><button type="button" class="btn btn-danger" style="margin-right: 10px;" onclick="clearInput()">Cancelar</button></td>
+                            <td><button type="button" class="btn btn-toolbar" onclick="appendValue(0)">0</button></td>
+                            <td><button type="button" class="btn btn-success" style="margin-left: 10px;">Iniciar</button></td>
+                        </tr>
+                        <tr>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Tempo')">Tempo⏳</button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Potencia')">Potência📶</button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Calcular</button>
+                </div>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<script>
+    // Variável global para armazenar o ID do campo selecionado
+    let currentInput = null;
+
+    // Define o campo atual e aplica o foco
+    function focusAndSetInput(inputId) {
+        currentInput = inputId;
+        const input = document.getElementById(inputId);
+        input.focus();
+    }
+
+    // Define o campo atual sem focar
+    function setCurrentInput(inputId) {
+        currentInput = inputId;
+    }
+
+    // Adiciona o valor clicado ao campo selecionado
+    function appendValue(value) {
+        if (currentInput) {
+            const input = document.getElementById(currentInput);
+            input.value = input.value + value; // Adiciona o valor ao final do campo
+        }
+    }
+
+    // Limpa o campo selecionado
+    function clearInput() {
+        if (currentInput) {
+            const input = document.getElementById(currentInput);
+            input.value = ''; // Limpa o campo
+        }
+    }
+</script>
+
+
+
+@*<table style="width: 100%; height: 50vh; border: none;">
+        <tr>
+            <td align="center" valign="middle">
+                <form action="/Microondas/Calcular" method="post">
+                    <div class="form-group">
+                        <label for="Tempo" class="control-label">Tempo:</label>
+                        <input type="number" id="Tempo" name="Tempo" value="@(ViewBag.Resultado)">
+                    </div>
+                    <div class="form-group">
+                        <label for="Potencia" class="control-label">Potência:</label>
+                        <input type="number" id="Potencia" name="Potencia">
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <table border="0" style="border-collapse: collapse; text-align: center;">
+                            <tr>
+                                <td><button class="btn btn-toolbar">1</button></td>
+                                <td><button class="btn btn-toolbar">2</button></td>
+                                <td><button class="btn btn-toolbar">3</button></td>
+                            </tr>
+                            <tr>
+                                <td><button class="btn btn-toolbar">4</button></td>
+                                <td><button class="btn btn-toolbar">5</button></td>
+                                <td><button class="btn btn-toolbar">6</button></td>
+                            </tr>
+                            <tr>
+                                <td><button class="btn btn-toolbar">7</button></td>
+                                <td><button class="btn btn-toolbar">8</button></td>
+                                <td><button class="btn btn-toolbar">9</button></td>
+                            </tr>
+                            <tr>
+                                <td><button class="btn btn-toolbar" style="margin-right: 10px;">Cancelar</button></td>
+                                <td><button class="btn btn-toolbar">0</button></td>
+                                <td><button class="btn btn-toolbar" style="margin-left: 10px;">Iniciar</button></td>
+                            </tr>
+                            <tr>
+                                <td><button type="button" class="btn btn-toolbar" onclick="document.getElementById('Tempo').focus()">Tempo</button></td>
+                                <td><button type="button" class="btn btn-toolbar" onclick="document.getElementById('Potencia').focus()">Potência</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Calcular</button>
+                    </div>
+                </form>
+            </td>
+        </tr>
+    </table>*@
+
+
+
+
+
