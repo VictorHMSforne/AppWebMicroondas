@@ -7,7 +7,8 @@ namespace WebMicroondas.Models
 {
     public class Microondas
     {
-        public int Tempo { get; set; }
-        public int Potencia { get; set; }
+        public int? Tempo { get; set; }
+        public int? Potencia { get; set; }
+        public string Mensagem { get; set; }
     }
 }
