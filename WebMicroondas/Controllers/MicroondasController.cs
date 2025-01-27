@@ -11,6 +11,7 @@ namespace WebMicroondas.Controllers
     {
         public static string AquecimentoParado;
         public static string MensagemDoMicroondas;
+        public static bool SegundaVezNaPaginaCancelar = false;
 
         public ActionResult Index()
         {
@@ -22,7 +23,7 @@ namespace WebMicroondas.Controllers
         public ActionResult IniciarAquecimento(Microondas microondas)
         {
             ViewBag.AquecimentoParado = AquecimentoParado;
-            ViewBag.MensagemDoMicroondas = MensagemDoMicroondas;
+            
 
             int? tempo = microondas.Tempo;
             int? potencia = microondas.Potencia;
@@ -65,9 +66,27 @@ namespace WebMicroondas.Controllers
                 ViewBag.Potencia = potencia ?? 10;
             }
             // Verificação para saber se o aquecimento foi iniciado
-            if (mensagem != null && mensagem.Contains("Aquecimento Iniciado"))
+            if (mensagem != null && mensagem.Contains("Aquecimento Concluído!") && AquecimentoParado.Contains("Aquecimento Parado!"))
+            {
+                ViewBag.MensagemDoMicroondas = "Aquecimento Iniciado ";
+                ViewBag.TempoJS = tempo;
+                ViewBag.TempoInput = tempo;
+                SegundaVezNaPaginaCancelar = false;
+                return View("Index");
+            }
+            else if (AquecimentoParado != null && AquecimentoParado.Contains("Aquecimento Parado!"))
+            {
+                ViewBag.MensagemDoMicroondas = MensagemDoMicroondas;
+                ViewBag.TempoJS = tempo;
+                ViewBag.TempoInput = tempo;
+                SegundaVezNaPaginaCancelar = false;
+                return View("Index");
+            }
+            
+            else if (mensagem != null && mensagem.Contains("Aquecimento Iniciado"))
             {
                 tempo += 30;
+                ViewBag.MensagemDoMicroondas = "Aquecimento Iniciado ";
                 ViewBag.TempoJS = tempo;
                 ViewBag.TempoInput = tempo;
                 return View("Index");
@@ -90,17 +109,38 @@ namespace WebMicroondas.Controllers
 
         public ActionResult CancelarAquecimento(Microondas microondas)
         {
+            
             int? tempo = microondas.Tempo;
             int? potencia = microondas.Potencia;
             string mensagem = microondas.Mensagem;
+
+            if ((tempo != null && potencia != null && mensagem == null) || (tempo == null && potencia == null && mensagem == null))
+            {
+                ViewBag.TempoInput = null;
+                ViewBag.Potencia = null;
+                ViewBag.AquecimentoParado = null;
+                return View();
+            }
+            else if (SegundaVezNaPaginaCancelar == true)
+            {
+                ViewBag.TempoInput = null;
+                ViewBag.Potencia = null;
+                ViewBag.AquecimentoParado = null;
+                SegundaVezNaPaginaCancelar = false;
+                return View();
+            }
 
             ViewBag.TempoInput = tempo;
             ViewBag.Potencia = potencia;
 
 
-            MensagemDoMicroondas = microondas.Mensagem; // Mensagem Indicando onde parou o aquecimento
+            MensagemDoMicroondas = mensagem; // Mensagem Indicando onde parou o aquecimento
             AquecimentoParado = "Aquecimento Parado!"; // Mensagem para ser enviada na view;
             ViewBag.AquecimentoParado = AquecimentoParado;
+            SegundaVezNaPaginaCancelar = true;
+
+
+
 
             // Retorna para uma nova página com as informações
             return View(); // Ou redireciona para uma página de cancelamento

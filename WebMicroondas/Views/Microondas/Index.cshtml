@@ -130,13 +130,14 @@
         mensagemInput = document.getElementById("Mensagem");
         let mensagemInicial = mensagemInput.value
 
-        if (microondasParado === "Aquecimento Parado!") {
+        if (microondasParado === "Aquecimento Parado!" && tempoRestante > 0) {
             mensagemElement.innerHTML = mensagemInicial;
             mensagemInput.value = mensagemInicial; // Atualiza o input disfarçado
 
+            let pontos = "";
             contagemInterval = setInterval(function () {
                 // Adiciona os pontos de acordo com a potência
-                let pontos = "";
+                
                 for (let i = 0; i < potencia; i++) {
                     pontos += "."; // Adiciona um ponto por iteração
                 }
@@ -147,7 +148,7 @@
                 }
 
                 // Atualiza a mensagem exibida no elemento
-                mensagemElement.innerHTML = mensagemInicial + " " + pontos;
+                mensagemElement.innerHTML = mensagemInicial + pontos;
 
                 // Atualiza o valor do input com a mensagem
                 mensagemInput.value = mensagemElement.innerHTML;
@@ -168,47 +169,50 @@
                 }
             }, 1000); // Atualiza a cada segundo
         }
+        else {
+            // Verifica se há tempo a ser contado
+            if (tempoRestante > 0) {
+                let mensagemInput = document.getElementById("Mensagem");
 
-        // Verifica se há tempo a ser contado
-        if (tempoRestante > 0) {
-            let mensagemInput = document.getElementById("Mensagem");
+                mensagemElement.innerHTML = "Aquecimento Iniciado";
+                mensagemInput.value = "Aquecimento Iniciado"; // Atualiza o input disfarçado
 
-            mensagemElement.innerHTML = "Aquecimento Iniciado";
-            mensagemInput.value = "Aquecimento Iniciado"; // Atualiza o input disfarçado
+                contagemInterval = setInterval(function () {
+                    // Adiciona os pontos de acordo com a potência
+                    for (let i = 0; i < potencia; i++) {
+                        pontos += "."; // Adiciona um ponto por iteração
+                    }
 
-            contagemInterval = setInterval(function () {
-                // Adiciona os pontos de acordo com a potência
-                for (let i = 0; i < potencia; i++) {
-                    pontos += "."; // Adiciona um ponto por iteração
-                }
+                    // Se a potência for maior que 1, adicione um espaço após os pontos
+                    if (potencia > 1) {
+                        pontos += " "; // Adiciona espaço entre os blocos de pontos
+                    }
 
-                // Se a potência for maior que 1, adicione um espaço após os pontos
-                if (potencia > 1) {
-                    pontos += " "; // Adiciona espaço entre os blocos de pontos
-                }
+                    // Atualiza a mensagem exibida no elemento
+                    mensagemElement.innerHTML = "Aquecimento Iniciado " + pontos;
 
-                // Atualiza a mensagem exibida no elemento
-                mensagemElement.innerHTML = "Aquecimento Iniciado " + pontos;
+                    // Atualiza o valor do input com a mensagem
+                    mensagemInput.value = mensagemElement.innerHTML;
 
-                // Atualiza o valor do input com a mensagem
-                mensagemInput.value = mensagemElement.innerHTML;
+                    // Decrementa o tempo restante
+                    tempoRestante--;
 
-                // Decrementa o tempo restante
-                tempoRestante--;
+                    // Atualiza o valor no input de tempo
+                    let tempoInput = document.getElementById("Tempo");
+                    if (tempoInput) tempoInput.value = tempoRestante;
 
-                // Atualiza o valor no input de tempo
-                let tempoInput = document.getElementById("Tempo");
-                if (tempoInput) tempoInput.value = tempoRestante;
-
-                // Finaliza o aquecimento quando o tempo chega a zero
-                if (tempoRestante < 0) {
-                    tempoInput.value = 0;
-                    clearInterval(contagemInterval); // Para a contagem
-                    mensagemElement.innerHTML = "Aquecimento Concluído!";
-                    mensagemInput.value = "Aquecimento Concluído!"; // Atualiza o input disfarçado
-                }
-            }, 1000); // Atualiza a cada segundo
+                    // Finaliza o aquecimento quando o tempo chega a zero
+                    if (tempoRestante < 0) {
+                        tempoInput.value = 0;
+                        clearInterval(contagemInterval); // Para a contagem
+                        mensagemElement.innerHTML = "Aquecimento Concluído!";
+                        mensagemInput.value = "Aquecimento Concluído!"; // Atualiza o input disfarçado
+                    }
+                }, 1000); // Atualiza a cada segundo
+            }
         }
+
+        
     });
 </script>
 
