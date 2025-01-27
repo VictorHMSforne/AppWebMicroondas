@@ -9,7 +9,9 @@ namespace WebMicroondas.Controllers
 {
     public class MicroondasController : Controller
     {
-        
+        public static string AquecimentoParado;
+        public static string MensagemDoMicroondas;
+
         public ActionResult Index()
         {
             return View();
@@ -19,6 +21,9 @@ namespace WebMicroondas.Controllers
         [HttpPost]
         public ActionResult IniciarAquecimento(Microondas microondas)
         {
+            ViewBag.AquecimentoParado = AquecimentoParado;
+            ViewBag.MensagemDoMicroondas = MensagemDoMicroondas;
+
             int? tempo = microondas.Tempo;
             int? potencia = microondas.Potencia;
             TimeSpan tempoEmMinutos = new TimeSpan();
@@ -74,5 +79,32 @@ namespace WebMicroondas.Controllers
 
             return View("Index");
         }
+
+
+        public ActionResult CancelarAquecimento()
+        {
+            return View();
+        }
+
+        [HttpPost]
+
+        public ActionResult CancelarAquecimento(Microondas microondas)
+        {
+            int? tempo = microondas.Tempo;
+            int? potencia = microondas.Potencia;
+            string mensagem = microondas.Mensagem;
+
+            ViewBag.TempoInput = tempo;
+            ViewBag.Potencia = potencia;
+
+
+            MensagemDoMicroondas = microondas.Mensagem; // Mensagem Indicando onde parou o aquecimento
+            AquecimentoParado = "Aquecimento Parado!"; // Mensagem para ser enviada na view;
+            ViewBag.AquecimentoParado = AquecimentoParado;
+
+            // Retorna para uma nova página com as informações
+            return View(); // Ou redireciona para uma página de cancelamento
+        }
     }
+
 }
