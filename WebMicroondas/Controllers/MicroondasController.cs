@@ -9,7 +9,8 @@ namespace WebMicroondas.Controllers
 {
     public class MicroondasController : Controller
     {
-        public static string AquecimentoParado;
+        // Variáveis globais para poder auxiliar na validação e na troca de dados de uma view para outra
+        public static string AquecimentoParado = "";
         public static string MensagemDoMicroondas;
         public static bool SegundaVezNaPaginaCancelar = false;
 
@@ -22,9 +23,10 @@ namespace WebMicroondas.Controllers
         [HttpPost]
         public ActionResult IniciarAquecimento(Microondas microondas)
         {
+            // Essa ViewBag é usada posteriormente, com o objetivo de ajudar nas validações dos if's
             ViewBag.AquecimentoParado = AquecimentoParado;
             
-
+            // Recebe as variáveis que o usuário inseriu
             int? tempo = microondas.Tempo;
             int? potencia = microondas.Potencia;
             TimeSpan tempoEmMinutos = new TimeSpan();
@@ -59,21 +61,23 @@ namespace WebMicroondas.Controllers
                 ViewBag.TempoInput = exibirNoInput;
                 ViewBag.Potencia = potencia ?? 10;
             }
-            // Se não for atendido, recebe o que o usuário inseriu
+            // Se não for atendido, recebe o que o usuário inseriu de tempo e potência
             else
             {
                 ViewBag.TempoInput = tempo;
                 ViewBag.Potencia = potencia ?? 10;
             }
-            // Verificação para saber se o aquecimento foi iniciado
-            if (mensagem != null && mensagem.Contains("Aquecimento Concluído!") && AquecimentoParado.Contains("Aquecimento Parado!"))
+            /* Verifica se os inputs disfarçados possuem algum dado de outra operação logo após o 1° Cancelamento.
+               Caso possuir algum dado dentro desses inputs, ele irá pegar o necessário e limpar a variável de apoio que é atribuída no Método CancelarAquecimento()*/
+            if ((mensagem != null && mensagem.Contains("Aquecimento Concluído!") && AquecimentoParado.Contains("Aquecimento Parado!") || (mensagem != null && mensagem.Contains("Aquecimento Concluído!") && String.IsNullOrEmpty(AquecimentoParado)) ))
             {
                 ViewBag.MensagemDoMicroondas = "Aquecimento Iniciado ";
                 ViewBag.TempoJS = tempo;
                 ViewBag.TempoInput = tempo;
-                SegundaVezNaPaginaCancelar = false;
+                SegundaVezNaPaginaCancelar = false; // Variável Global onde é atribuida a 1° vez no CancelarAquecimento()
                 return View("Index");
             }
+            // Faz a verificação se o Aquecimento estava parado. Caso estiver parado, recebe os dados do método CancelarAquecimento() e passa os dados para a Index(), continuando o aquecimento de onde parou.
             else if (AquecimentoParado != null && AquecimentoParado.Contains("Aquecimento Parado!"))
             {
                 ViewBag.MensagemDoMicroondas = MensagemDoMicroondas;
@@ -82,7 +86,7 @@ namespace WebMicroondas.Controllers
                 SegundaVezNaPaginaCancelar = false;
                 return View("Index");
             }
-            
+            // Se o usuário não inserir nenhum valor, irá preencher automaticamente conforme pedido
             else if (mensagem != null && mensagem.Contains("Aquecimento Iniciado"))
             {
                 tempo += 30;
@@ -92,58 +96,66 @@ namespace WebMicroondas.Controllers
                 return View("Index");
             }
 
-            // Atualiza o tempo no frontend
+            // Caso nenhum dos if's sejam atentidos ele retorna os dados para a View novamente
             ViewBag.TempoJS = tempo;
             ViewBag.Potencia = potencia ?? 10;
 
             return View("Index");
         }
 
-
+        // Cópia da Página Index, alterando somente o nome
         public ActionResult CancelarAquecimento()
         {
             return View();
         }
 
+        // Método Post para Cancelar o Aquecimento
         [HttpPost]
-
         public ActionResult CancelarAquecimento(Microondas microondas)
         {
-            
+            // Recebendo os dados do usuário pelo forms
             int? tempo = microondas.Tempo;
             int? potencia = microondas.Potencia;
             string mensagem = microondas.Mensagem;
 
+            // Caso o usuário clique em cancelar pela 2ª vez, reseta todos os campos
             if ((tempo != null && potencia != null && mensagem == null) || (tempo == null && potencia == null && mensagem == null))
             {
+                AquecimentoParado = "";
+                MensagemDoMicroondas = null;
                 ViewBag.TempoInput = null;
                 ViewBag.Potencia = null;
                 ViewBag.AquecimentoParado = null;
                 return View();
             }
+            // Verifica se o usuário clicou novamente no botão cancelar, após ter começado outro aquecimento. Se tiver clicado ele limpa os dados anteriores e recebe os novos para a view Index()
             else if (SegundaVezNaPaginaCancelar == true)
             {
-                ViewBag.TempoInput = null;
-                ViewBag.Potencia = null;
-                ViewBag.AquecimentoParado = null;
-                SegundaVezNaPaginaCancelar = false;
-                return View();
+                ViewBag.TempoInput = tempo;
+                ViewBag.Potencia = potencia;
+
+
+                MensagemDoMicroondas = mensagem; // Mensagem Indicando onde parou o aquecimento
+                AquecimentoParado = "Aquecimento Parado!"; // Mensagem para ser enviada na view Atual e atribuindo o valor em uma Variável global(Lá no ínicio);
+                ViewBag.AquecimentoParado = AquecimentoParado;
+                return View("Index");
             }
 
+            // Passa os dados para a a view de CancelarAquecimento(), que estão vindo da Index()
             ViewBag.TempoInput = tempo;
             ViewBag.Potencia = potencia;
 
 
             MensagemDoMicroondas = mensagem; // Mensagem Indicando onde parou o aquecimento
-            AquecimentoParado = "Aquecimento Parado!"; // Mensagem para ser enviada na view;
+            AquecimentoParado = "Aquecimento Parado!"; // Mensagem para ser enviada na view Atual e atribuindo o valor em uma Variável global(Lá no ínicio);
             ViewBag.AquecimentoParado = AquecimentoParado;
-            SegundaVezNaPaginaCancelar = true;
+            SegundaVezNaPaginaCancelar = true; // Dizendo que essa página já foi acessada uma 1° vez
 
 
 
 
             // Retorna para uma nova página com as informações
-            return View(); // Ou redireciona para uma página de cancelamento
+            return View(); 
         }
     }
 

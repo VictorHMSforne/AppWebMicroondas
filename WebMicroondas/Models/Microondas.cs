@@ -5,6 +5,7 @@ using System.Web;
 
 namespace WebMicroondas.Models
 {
+    // Classe Microondas com suas propriedades
     public class Microondas
     {
         public int? Tempo { get; set; }

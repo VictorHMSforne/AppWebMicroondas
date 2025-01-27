@@ -11,11 +11,11 @@
             <form method="post">
                 <div class="form-group">
                     <label for="Tempo" class="control-label">Tempo:</label>
-                    <input id="Tempo" name="Tempo" value="@(ViewBag.TempoInput)" onclick="setCurrentInput('Tempo')"> <!-- Após ter enviado o valor para a Controller ele exibe o mesmo novamente no input -->
+                    <input id="Tempo" name="Tempo" value="@(ViewBag.TempoInput)" onclick="setCurrentInput('Tempo')"> 
                 </div>
                 <div class="form-group">
                     <label for="Potencia" class="control-label">Potência:</label>
-                    <input id="Potencia" name="Potencia" value="@(ViewBag.Potencia)" onclick="setCurrentInput('Potencia')"> <!-- Ocorre o mesmo aqui -->
+                    <input id="Potencia" name="Potencia" value="@(ViewBag.Potencia)" onclick="setCurrentInput('Potencia')"> 
                 </div>
                 <div style="margin-top: 20px;">
                     <table border="0" style="border-collapse: collapse; text-align: center;">
@@ -42,15 +42,15 @@
                         <tr></tr>
                         <tr>
                             <td>
-                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Tempo')">Tempo⏳</button> <!-- Funcionalidade feita usando o JS, para quando clicar nesse botão, colocar o foco no input do mesmo -->
+                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Tempo')">Tempo⏳</button>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Potencia')">Potência📶</button> <!-- Mesma coisa -->
+                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Potencia')">Potência📶</button> 
                             </td>
                         </tr>
                     </table>
-                    <div id="mensagem"></div> <!-- Mensagem de aquecimento -->
-                    <input id="Mensagem" name="Mensagem" value="@(ViewBag.Mensagem)"><!-- Input disfarçado para poder enviar a verificação a controller, e verificar se está aquecendo ou não -->
+                    <div id="mensagem"></div> 
+                    <input id="Mensagem" name="Mensagem" value="@(ViewBag.Mensagem)">
                     <input id="microondasParado" name="microondasParado" value="@(ViewBag.AquecimentoParado)">
                 </div>
             </form>
@@ -59,15 +59,11 @@
 </table>
 
 <script>
-    // Variável global para armazenar o ID do campo selecionado
+    
     let currentInput = null;
-    let contagemInterval = null; // Variável para armazenar o intervalo da contagem
     let tempoRestante = 0; // Variável para armazenar o tempo restante
-    let pontos = ""; // Variável para os pontos exibidos
-    /*let mensagemElement = null*/; // Elemento para a mensagem de aquecimento
-    let mensagemInputDisfarcado = document.getElementById("Mensagem");
+    
     let mensagemExibidaEmTela = document.getElementById("mensagem");
-    let situacaoMicroondas = document.getElementById("microondasParado");
 
     // Define o campo atual e aplica o foco
     function focusAndSetInput(inputId) {
