@@ -1,4 +1,4 @@
-﻿@model WebMicroondas.Models.Microondas
+﻿@model WebMicroondas.ViewsModels.MicroondasViewModel
 
 @{
     ViewBag.Title = "Página Inicial";
@@ -63,11 +63,49 @@
                     <div id="mensagem"></div> <!-- Mensagem de aquecimento que é exibida ao usuário -->
                     <input id="Mensagem" name="Mensagem" value="@(ViewBag.MensagemDoMicroondas)"> <!-- Input disfarçado onde envia a situação da string de "Aquecimento Iniciado" para a controller  -->
                     <input id="microondasParado" name="microondasParado" value="@(ViewBag.AquecimentoParado)"> <!-- Input disfarçado onde envia a situação  se está aquecendo ou não para a controller -->
+                    <span id="simboloAtual">@ViewBag.Simbolo</span>
                 </div>
             </form>
         </td>
     </tr>
 </table>
+
+<div>
+    <!-- Tabela de aquecimentos pré-definidos -->
+    <h3>Aquecimentos Pré-definidos</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Alimento</th>
+                <th>Tempo</th>
+                <th>Potência</th>
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.AquecimentoPreDefinidos)
+            {
+                <tr>
+                    <td>@item.Nome</td>
+                    <td>@item.Alimento</td>
+                    <td>@item.Tempo</td>
+                    <td>@item.Potencia</td>
+                    <td>@item.InstrucoesComplementares</td>
+                    <td>
+                        <form method="post" action="/Microondas/IniciarAquecimentoPreDefinido">
+                            <input type="hidden" name="Tempo" value="@item.Tempo" />
+                            <input type="hidden" name="Potencia" value="@item.Potencia" />
+                            <input type="hidden" name="mensagemDeAquecimento" value="@item.MensagemDeAquecimento" />
+                            <button type="submit" class="btn btn-info">Selecionar</button>
+                        </form>
+                        
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 <script>
     // Variável global para armazenar o ID do campo selecionado
@@ -79,6 +117,7 @@
     let mensagemInput = document.getElementById("Mensagem");
     let mensagemExibidaEmTela = document.getElementById("mensagem");
     let mensagemParado = document.getElementById("microondasParado").value;
+    
 
     // Define o campo atual e aplica o foco
     function focusAndSetInput(inputId) {
@@ -103,21 +142,27 @@
     document.addEventListener("DOMContentLoaded", function () {
         tempoRestante = @(ViewBag.TempoJS ?? 0); // Obtém o tempo da Controller
         let potencia = @(ViewBag.Potencia ?? 1); // Obtém a potência da Controller
+        
         mensagemExibidaEmTela = document.getElementById("mensagem");
         mensagemInput = document.getElementById("Mensagem");
-        let mensagemInicial = mensagemInput.value
+        let mensagemInicial = mensagemInput.value;
+
+        let simbolo = "@(ViewBag.Simbolo)" && "@(ViewBag.Simbolo)" !== "" ? "@(ViewBag.Simbolo)" : "."; // Símbolo ou ponto padrão
+        
 
         // Verifica se a mensagem do input é "Aquecimento Parado!". Caso Seja executa o if, Caso não seja vai pro else
         if (mensagemParado === "Aquecimento Parado!" && tempoRestante > 0) {
             mensagemExibidaEmTela.innerHTML = mensagemInicial;
             mensagemInput.value = mensagemInicial; // Atualiza o input disfarçado
 
-            let pontos = "";
+
+            
+             pontos = "";
             contagemInterval = setInterval(function () {
 
                 // Adiciona os pontos de acordo com a potência
                 for (let i = 0; i < potencia; i++) {
-                    pontos += "."; // Adiciona um ponto por iteração
+                    pontos += simbolo; // Adiciona um ponto por iteração
                 }
 
                 // Se a potência for maior que 1, adicione um espaço após os pontos
@@ -148,48 +193,41 @@
             }, 1000); // Atualiza a cada segundo
         }
         else {
-            
+
             if (tempoRestante > 0) {
                 let mensagemInput = document.getElementById("Mensagem");
 
                 mensagemExibidaEmTela.innerHTML = "Aquecimento Iniciado";
-                mensagemInput.value = "Aquecimento Iniciado"; 
+                mensagemInput.value = "Aquecimento Iniciado";
 
-                contagemInterval = setInterval(function () {       
+                contagemInterval = setInterval(function () {
                     for (let i = 0; i < potencia; i++) {
-                        pontos += "."; 
+                        pontos += simbolo;
                     }
-                   
+
                     if (potencia > 1) {
-                        pontos += " "; 
+                        pontos += " ";
                     }
-                   
+
                     mensagemExibidaEmTela.innerHTML = "Aquecimento Iniciado " + pontos;
-                    
+
                     mensagemInput.value = mensagemExibidaEmTela.innerHTML;
-                   
+
                     tempoRestante--;
-                    
+
                     let tempoInput = document.getElementById("Tempo");
                     if (tempoInput) tempoInput.value = tempoRestante;
-                   
+
                     if (tempoRestante < 0) {
                         tempoInput.value = 0;
-                        clearInterval(contagemInterval); 
+                        clearInterval(contagemInterval);
                         mensagemExibidaEmTela.innerHTML = "Aquecimento Concluído!";
-                        mensagemInput.value = "Aquecimento Concluído!"; 
+                        mensagemInput.value = "Aquecimento Concluído!";
                     }
-                }, 1000); 
+                }, 1000);
             }
         }
 
 
     });
 </script>
-
-
-
-
-
-<!-- Input disfarçado onde envia a situação da string de "Aquecimento Iniciado" para a controller  -->
-<!-- Input disfarçado onde envia a situação  se está aquecendo ou não para a controller -->

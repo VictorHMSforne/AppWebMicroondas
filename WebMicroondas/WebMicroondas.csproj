@@ -126,7 +126,10 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Microondas.cs" />
+    <Compile Include="Models\AquecimentoPreDefinido.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\AquecimentoService.cs" />
+    <Compile Include="ViewsModels\MicroondasViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
