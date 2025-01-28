@@ -1,4 +1,5 @@
-﻿
+﻿@model WebMicroondas.ViewsModels.MicroondasViewModel
+
 @{
     ViewBag.Title = "CancelarAquecimento";
 }
@@ -11,11 +12,11 @@
             <form method="post">
                 <div class="form-group">
                     <label for="Tempo" class="control-label">Tempo:</label>
-                    <input id="Tempo" name="Tempo" value="@(ViewBag.TempoInput)" onclick="setCurrentInput('Tempo')"> 
+                    <input id="Tempo" name="Tempo" value="@(ViewBag.TempoInput)" onclick="setCurrentInput('Tempo')">
                 </div>
                 <div class="form-group">
                     <label for="Potencia" class="control-label">Potência:</label>
-                    <input id="Potencia" name="Potencia" value="@(ViewBag.Potencia)" onclick="setCurrentInput('Potencia')"> 
+                    <input id="Potencia" name="Potencia" value="@(ViewBag.Potencia)" onclick="setCurrentInput('Potencia')">
                 </div>
                 <div style="margin-top: 20px;">
                     <table border="0" style="border-collapse: collapse; text-align: center;">
@@ -45,11 +46,11 @@
                                 <button type="button" class="btn btn-default" onclick="focusAndSetInput('Tempo')">Tempo⏳</button>
                             </td>
                             <td>
-                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Potencia')">Potência📶</button> 
+                                <button type="button" class="btn btn-default" onclick="focusAndSetInput('Potencia')">Potência📶</button>
                             </td>
                         </tr>
                     </table>
-                    <div id="mensagem"></div> 
+                    <div id="mensagem"></div>
                     <input type="hidden" id="Mensagem" name="Mensagem" value="@(ViewBag.Mensagem)">
                     <input type="hidden" id="microondasParado" name="microondasParado" value="@(ViewBag.AquecimentoParado)">
                 </div>
@@ -58,11 +59,74 @@
     </tr>
 </table>
 
+<a href="/Aquecimento/Create" type="button" class="btn btn-success" style="margin-left: 10px;">Cadastrar Aquecimentos</a>
+<div>
+    <!-- Tabela de aquecimentos pré-definidos -->
+    <h3>Aquecimentos Pré-definidos</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Alimento</th>
+                <th>Tempo</th>
+                <th>Potência</th>
+                <th>Ação</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.AquecimentoPreDefinidos)
+            {
+                <tr>
+                    <td>@item.Nome</td>
+                    <td>@item.Alimento</td>
+                    <td>@item.Tempo</td>
+                    <td>@item.Potencia</td>
+                    <td>@item.InstrucoesComplementares</td>
+                    <td>
+                        <form method="post" action="/Microondas/IniciarAquecimentoPreDefinido">
+                            <input type="hidden" name="Tempo" value="@item.Tempo" />
+                            <input type="hidden" name="Potencia" value="@item.Potencia" />
+                            <input type="hidden" name="mensagemDeAquecimento" value="@item.MensagemDeAquecimento" />
+                            <button type="submit" class="btn btn-info">Selecionar</button>
+                        </form>
+
+                    </td>
+                    <td></td>
+                </tr>
+            }
+            @foreach (var item in Model.AquecimentoPreDB)
+            {
+                <tr>
+                    <td><i>@item.Nome</i></td>
+                    <td><i>@item.Alimento</i></td>
+                    <td>@item.Tempo</td>
+                    <td>@item.Potencia</td>
+                    <td><i>@item.InstrucoesComplementares</i></td>
+                    <td>
+                        <form method="post" action="/Microondas/IniciarAquecimentoPreDefinido">
+                            <input type="hidden" name="Tempo" value="@item.Tempo" />
+                            <input type="hidden" name="Potencia" value="@item.Potencia" />
+                            <input type="hidden" name="mensagemDeAquecimento" value="@item.MensagemDeAquecimento" />
+                            <button type="submit" class="btn btn-info">Selecionar</button>
+                        </form>
+
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Aquecimento", new { id = item.Id })">Editar</a> |
+                        <a href="@Url.Action("Delete", "Aquecimento", new { id = item.Id })">Deletar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
 <script>
-    
+
     let currentInput = null;
     let tempoRestante = 0; // Variável para armazenar o tempo restante
-    
+
     let mensagemExibidaEmTela = document.getElementById("mensagem");
 
     // Define o campo atual e aplica o foco
@@ -92,7 +156,7 @@
 
         // Verifica se há tempo a ser contado
         if (tempoRestante > 0 && potencia > 0) {
-            mensagemExibidaEmTela.innerHTML = "Aquecimento Parado!" 
+            mensagemExibidaEmTela.innerHTML = "Aquecimento Parado!"
         }
     });
 </script>

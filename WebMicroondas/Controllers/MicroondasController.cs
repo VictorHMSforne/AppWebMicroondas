@@ -202,7 +202,7 @@ namespace WebMicroondas.Controllers
                 ViewBag.TempoInput = null;
                 ViewBag.Potencia = null;
                 ViewBag.AquecimentoParado = null;
-                return View();
+                return View(viewModel);
             }
             // Verifica se o usuário clicou novamente no botão cancelar, após ter começado outro aquecimento. Se tiver clicado ele limpa os dados anteriores e recebe os novos para a view Index()
             else if (SegundaVezNaPaginaCancelar == true)
@@ -238,7 +238,7 @@ namespace WebMicroondas.Controllers
 
 
             // Retorna para uma nova página com as informações
-            return View();
+            return View(viewModel);
         }
 
         [HttpPost]

@@ -61,8 +61,8 @@
                         </tr>
                     </table>
                     <div id="mensagem"></div> <!-- Mensagem de aquecimento que é exibida ao usuário -->
-                    <input id="Mensagem" name="Mensagem" value="@(ViewBag.MensagemDoMicroondas)"> <!-- Input disfarçado onde envia a situação da string de "Aquecimento Iniciado" para a controller  -->
-                    <input id="microondasParado" name="microondasParado" value="@(ViewBag.AquecimentoParado)"> <!-- Input disfarçado onde envia a situação  se está aquecendo ou não para a controller -->
+                    <input type="hidden" id="Mensagem" name="Mensagem" value="@(ViewBag.MensagemDoMicroondas)"> <!-- Input disfarçado onde envia a situação da string de "Aquecimento Iniciado" para a controller  -->
+                    <input type="hidden" id="microondasParado" name="microondasParado" value="@(ViewBag.AquecimentoParado)"> <!-- Input disfarçado onde envia a situação  se está aquecendo ou não para a controller -->
                     
                 </div>
             </form>
