@@ -1,2 +1,3 @@
 # WebMicroondas
-Aplicação de um Microondas feito em Web usando ASP.NET com arquitetura MVC
+## ⚠️Caso ocorra erro na conexão do BD⚠️
+Altere no arquivo [Web.config](https://github.com/VictorHMSforne/AppWebMicroondas/blob/main/WebMicroondas/Web.config) para o nome do seu Banco que deseja conectar
