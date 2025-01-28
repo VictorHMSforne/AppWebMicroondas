@@ -63,13 +63,13 @@
                     <div id="mensagem"></div> <!-- Mensagem de aquecimento que é exibida ao usuário -->
                     <input id="Mensagem" name="Mensagem" value="@(ViewBag.MensagemDoMicroondas)"> <!-- Input disfarçado onde envia a situação da string de "Aquecimento Iniciado" para a controller  -->
                     <input id="microondasParado" name="microondasParado" value="@(ViewBag.AquecimentoParado)"> <!-- Input disfarçado onde envia a situação  se está aquecendo ou não para a controller -->
-                    <span id="simboloAtual">@ViewBag.Simbolo</span>
+                    
                 </div>
             </form>
         </td>
     </tr>
 </table>
-
+<a href="/Aquecimento/Create" type="button"  class="btn btn-success" style="margin-left: 10px;">Cadastrar Aquecimentos</a>
 <div>
     <!-- Tabela de aquecimentos pré-definidos -->
     <h3>Aquecimentos Pré-definidos</h3>
@@ -81,6 +81,7 @@
                 <th>Tempo</th>
                 <th>Potência</th>
                 <th>Ação</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -99,7 +100,32 @@
                             <input type="hidden" name="mensagemDeAquecimento" value="@item.MensagemDeAquecimento" />
                             <button type="submit" class="btn btn-info">Selecionar</button>
                         </form>
-                        
+
+                    </td>
+                    <td>
+                    </td>
+                </tr>
+            }
+            @foreach (var item in Model.AquecimentoPreDB)
+            {
+                <tr>
+                    <td><i>@item.Nome</i></td>
+                    <td><i>@item.Alimento</i></td>
+                    <td>@item.Tempo</td>
+                    <td>@item.Potencia</td>
+                    <td><i>@item.InstrucoesComplementares</i></td>
+                    <td>
+                        <form method="post" action="/Microondas/IniciarAquecimentoPreDefinido">
+                            <input type="hidden" name="Tempo" value="@item.Tempo" />
+                            <input type="hidden" name="Potencia" value="@item.Potencia" />
+                            <input type="hidden" name="mensagemDeAquecimento" value="@item.MensagemDeAquecimento" />
+                            <button type="submit" class="btn btn-info">Selecionar</button>
+                        </form>
+
+                    </td>
+                    <td>
+                        <a href="@Url.Action("Edit", "Aquecimento", new { id = item.Id })">Editar</a> |
+                        <a href="@Url.Action("Delete", "Aquecimento", new { id = item.Id })">Deletar</a>
                     </td>
                 </tr>
             }

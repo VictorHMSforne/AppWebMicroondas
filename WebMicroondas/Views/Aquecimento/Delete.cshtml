@@ -1,0 +1,72 @@
+﻿@model WebMicroondas.Models.AquecimentoPreDB
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Deletar Aquecimento</h2>
+
+<h3>Você tem certeza que quer deletar esse aquecimento?</h3>
+<div>
+    <h4>AquecimentoPreDB</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Nome)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Nome)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Alimento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Alimento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Tempo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Tempo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Potencia)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Potencia)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MensagemDeAquecimento)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MensagemDeAquecimento)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.InstrucoesComplementares)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.InstrucoesComplementares)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Voltar para a página Principal", "Index" , "Microondas")
+        </div>
+    }
+</div>

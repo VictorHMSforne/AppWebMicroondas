@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebMicroondas.Context;
 using WebMicroondas.Models;
 using WebMicroondas.Services;
 using WebMicroondas.ViewsModels;
@@ -18,6 +19,16 @@ namespace WebMicroondas.Controllers
         public static int PotenciaPreDefinida;
         public static bool SegundaVezNaPaginaCancelar = false;
         public static List<AquecimentoPreDefinido> Aquecimentos = new AquecimentoService().ObterAquecimentosPreDefinidos();
+        private AquecimentoContext _context;
+        public static List<AquecimentoPreDB> AquecimentosDB { get; set; }
+
+        public MicroondasController()
+        {
+            _context = new AquecimentoContext();
+
+            AquecimentosDB = _context.AquecimentosPreDefinidos.ToList();
+        }
+
 
         public ActionResult Index()
         {
@@ -28,10 +39,9 @@ namespace WebMicroondas.Controllers
                 Mensagem = ""
             };
 
+
             var aquecimentos = Aquecimentos;
-
-
-            var viewModel = MicroondasViewModel.CriarViewModel(microondas, aquecimentos);
+            var viewModel = MicroondasViewModel.CriarViewModel(microondas, aquecimentos, AquecimentosDB);
 
             return View(viewModel);
         }
@@ -51,7 +61,7 @@ namespace WebMicroondas.Controllers
             string exibirNoInput;
             string mensagem = microondas.Mensagem;
 
-            var viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos);
+            var viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos, AquecimentosDB);
 
             // Caso nenhum valor seja passado, Começa o Tempo em 30s e a potência em 10
             if (tempo == null && potencia == null)
@@ -60,12 +70,12 @@ namespace WebMicroondas.Controllers
                 ViewBag.TempoJS = 30;
                 ViewBag.Potencia = 10;
                 ModelState.Clear();
-                viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos);
+                viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos, AquecimentosDB);
                 return View("Index", viewModel);
             }
 
             // Validações para tempo e potência
-            if (!Aquecimentos.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido))
+            if (!Aquecimentos.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido) && !AquecimentosDB.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido) )
             {
                 if (tempo == null || tempo < 1 || tempo > 120)
                     ModelState.AddModelError("", "O Tempo deve estar entre 1 e 120 segundos");
@@ -102,19 +112,19 @@ namespace WebMicroondas.Controllers
                 ViewBag.TempoJS = tempo;
                 ViewBag.TempoInput = tempo;
                 SegundaVezNaPaginaCancelar = false; // Variável Global onde é atribuida a 1° vez no CancelarAquecimento()
-                viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos);
+                viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos, AquecimentosDB);
                 return View("Index", viewModel);
             }
             // Faz a verificação se o Aquecimento estava parado. Caso estiver parado, recebe os dados do método CancelarAquecimento() e passa os dados para a Index(), continuando o aquecimento de onde parou.
             else if (AquecimentoParado != null && AquecimentoParado.Contains("Aquecimento Parado!"))
             {
-                if (!Aquecimentos.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido))
+                if (!Aquecimentos.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido) && !AquecimentosDB.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido))
                 {
                     ViewBag.MensagemDoMicroondas = MensagemDoMicroondas;
                     ViewBag.TempoJS = tempo;
                     ViewBag.TempoInput = tempo;
                     SegundaVezNaPaginaCancelar = false;
-                    viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos);
+                    viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos, AquecimentosDB);
                     return View("Index", viewModel);
                 }
                 ModelState.AddModelError("", "Aquecimentos Pré-Definidos não podem aumentar mais 30s");
@@ -132,7 +142,7 @@ namespace WebMicroondas.Controllers
 
             }
             // Se o usuário clicar novamente em Iniciar, adiciona mais 30 segundos
-            if (!Aquecimentos.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido))
+            if (!Aquecimentos.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido) && !AquecimentosDB.Any(n => n.MensagemDeAquecimento == SimboloDoAquecimentoPreDefinido))
             {
                 if (mensagem != null && mensagem.Contains("Aquecimento Iniciado"))
                 {
@@ -140,7 +150,7 @@ namespace WebMicroondas.Controllers
                     ViewBag.MensagemDoMicroondas = "Aquecimento Iniciado ";
                     ViewBag.TempoJS = tempo;
                     ViewBag.TempoInput = tempo;
-                    viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos);
+                    viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos, AquecimentosDB);
                     return View("Index", viewModel);
                 }
             }
@@ -179,7 +189,9 @@ namespace WebMicroondas.Controllers
             int? tempo = microondas.Tempo;
             int? potencia = microondas.Potencia;
             string mensagem = microondas.Mensagem;
-            var viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos);
+
+
+            var viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos, AquecimentosDB);
 
             // Caso o usuário clique em cancelar novamente, reseta todos os campos
             if ((tempo != null && potencia != null && mensagem == null) || (tempo == null && potencia == null && mensagem == null))
@@ -232,15 +244,17 @@ namespace WebMicroondas.Controllers
         [HttpPost]
         public ActionResult IniciarAquecimentoPreDefinido(int tempo, int potencia, string mensagemDeAquecimento)
         {
+            ViewBag.Simbolo = "";
             var microondas = new Microondas
             {
                 Tempo = tempo,
                 Potencia = potencia,
             };
-            if (Aquecimentos.Any(n => n.MensagemDeAquecimento == mensagemDeAquecimento))
+            if (Aquecimentos.Any(n => n.MensagemDeAquecimento == mensagemDeAquecimento) || AquecimentosDB.Any(n => n.MensagemDeAquecimento == mensagemDeAquecimento))
             {
                 SimboloDoAquecimentoPreDefinido = mensagemDeAquecimento;
             }
+
 
             var aquecimentos = Aquecimentos;
 
@@ -249,7 +263,9 @@ namespace WebMicroondas.Controllers
             ViewBag.TempoInput = tempo;
             ViewBag.Potencia = potencia;
             ViewBag.TempoJS = tempo;
-            var viewModel = MicroondasViewModel.CriarViewModel(microondas, aquecimentos);
+
+            
+            var viewModel = MicroondasViewModel.CriarViewModel(microondas, Aquecimentos, AquecimentosDB);
 
             return View("Index", viewModel);
         }
